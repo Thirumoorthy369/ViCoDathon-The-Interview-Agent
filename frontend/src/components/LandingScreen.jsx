@@ -162,8 +162,22 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
     }
   };
 
+  // Deselect candidate when clicking empty areas (Landing background)
+  const handleOuterClick = (e) => {
+    // Ignore clicks inside active widgets or cards
+    if (
+      e.target.closest('.candidate-card') || 
+      e.target.closest('.landing-search-container') || 
+      e.target.closest('.landing-action-bar')
+    ) {
+      return;
+    }
+    setSelectedId(null);
+    setFullCandidateData(null);
+  };
+
   return (
-    <div className="landing">
+    <div className="landing" onClick={handleOuterClick}>
       {/* Decorative background elements */}
       <div className="landing-bg-pattern" />
       

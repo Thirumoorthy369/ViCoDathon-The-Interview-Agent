@@ -171,7 +171,12 @@ Navigate directly to the core design documents created during the planning phase
 **Result:** Implemented a callGroqWithFallback wrapper in groq.js that automatically catches API failures (such as rate limits or server overloads) on llama-3.1-8b-instant and tries alternative free-tier models (gemma2-9b-it, mixtral-8x7b-32768, llama-3.3-70b-versatile) sequentially.
 **Files touched:** backend/groq.js
 
-### 2026-08-09 12:55 AM — Antigravity — Active Model Verification & list Sync
+### 2026-08-09 08:16 AM — Antigravity — Active Model Verification & List Sync
 **Prompt:** and tell whether we need to change the groq apikey? and check with every model once whether everythins is in working condition
 **Result:** Created and executed a live query verification script in the backend. Discovered that gemma2-9b-it and mixtral-8x7b-32768 were decommissioned by Groq. Synced the MODELS array in groq.js to target active models: llama-3.1-8b-instant, qwen/qwen3.6-27b, llama-3.3-70b-versatile, and openai/gpt-oss-20b.
 **Files touched:** backend/groq.js
+
+### 2026-08-09 08:45 AM — Antigravity — Search UI, Page Wiggle, & Card Deselection
+**Prompt:** search bar UI/UX - not good. when i try to move the total card containing title , names, search bar also moving left right - solve this also. when i select one name card and i cannot deselct like i selected one, now i dont need to select anything means i can't - mke that if i slect outside of any card of name cards eans - it should be not slect the selected card
+**Result:** Overrode the browser focus-visible outline on the search input box inside LandingScreen.css to let only the parent glassmorphic container glow on focus. Added overflow-x: hidden to the main wrapper to prevent page wiggling caused by decorative background blobs. Implemented a handleOuterClick wrapper in LandingScreen.jsx to clear selected candidates when clicking empty background space.
+**Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css

@@ -5,6 +5,7 @@
   background: radial-gradient(circle at 10% 20%, rgba(253, 238, 224, 0.4) 0%, rgba(250, 248, 245, 1) 90%);
   position: relative;
   overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal page scroll/wiggle caused by floating background blobs */
   padding: var(--space-xl) var(--space-md) 140px; /* Bottom padding to prevent floating action bar from overlapping footer */
 }
 
@@ -155,6 +156,12 @@
   font-size: var(--font-size-sm);
   color: var(--color-text);
   font-weight: 500;
+}
+
+.landing-search-input:focus,
+.landing-search-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .landing-count {
