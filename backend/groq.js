@@ -184,6 +184,9 @@ Choose (a) or (b) based on the quality and depth of the candidate's response.`;
     return { reply, shouldAdvance };
   } catch (error) {
     console.error('Groq API error:', error.message);
+    if (error.status === 401 || error.message.includes('401') || error.message.includes('API key')) {
+      throw new Error('Invalid Groq API Key. Please check the GROQ_API_KEY in your backend/.env file and ensure it matches a valid key from https://console.groq.com.');
+    }
     throw new Error(`LLM call failed: ${error.message}`);
   }
 }
