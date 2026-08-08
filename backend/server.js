@@ -228,10 +228,9 @@ app.post('/api/interview', async (req, res) => {
 
       // Complete if:
       // 1. We hit the hard ceiling of 14 questions (cost containment)
-      // 2. We met minimums (8 questions, 4 days) and the plan is exhausted
+      // 2. We met minimums (8 questions, 4 days)
       // 3. We cannot possibly meet MIN_DAYS (sparse candidate profile) but reached MIN_QUESTIONS (8)
-      const isComplete = hitCeiling || 
-        (meetsMinimums && (exhaustedPlan || !nextPlan)) ||
+      const isComplete = hitCeiling || meetsMinimums || 
         (!nextPlan && !canMeetMinimums && session.questionCount >= MIN_QUESTIONS);
 
       if (isComplete) {

@@ -142,12 +142,18 @@ export async function generateInterviewReply(session, candidateMessage, currentP
   // Build conversation history for context
   const conversationMessages = transcriptToMessages(session.transcript);
 
-  // Determine if we should instruct advancement or follow-up
   // Count how many follow-ups we've done on the current topic
   const currentTopicFollowups = session.followupCount || 0;
   
+  // Check if this turn will complete the interview (meets minimums of 8 questions and 4 days)
+  const MIN_QUESTIONS = 8;
+  const MIN_DAYS = 4;
+  const willComplete = (session.questionCount >= MIN_QUESTIONS - 1 && session.askedDays.size >= MIN_DAYS);
+
   let advanceInstruction = '';
-  if (currentTopicFollowups >= 2) {
+  if (willComplete) {
+    advanceInstruction = `\n\nIMPORTANT: The interview is ending. This is your final response. Acknowledge the candidate's last answer, conclude the interview warmly, and do NOT ask any more questions.`;
+  } else if (currentTopicFollowups >= 2) {
     // Time-boxed: move to next topic (App-Flow.md §3 rule 6)
     if (nextPlanEntry) {
       advanceInstruction = `\n\nIMPORTANT: You've already asked ${currentTopicFollowups} follow-ups on this topic. Time to move on. Briefly acknowledge the candidate's response, then transition naturally to the next topic: Day ${nextPlanEntry.day} — ${nextPlanEntry.dayTitle} (${nextPlanEntry.moduleTitle}). The question approach should be: ${nextPlanEntry.questionType}.`;
@@ -162,15 +168,12 @@ export async function generateInterviewReply(session, candidateMessage, currentP
 Choose (a) or (b) based on the quality and depth of the candidate's response.`;
   }
 
-
-
   try {
     const response = await client.chat.completions.create({
       model: MODEL,
       messages: [
         { role: 'system', content: systemPrompt + advanceInstruction },
-        ...conversationMessages,
-        { role: 'user', content: candidateMessage }
+        ...conversationMessages
       ],
       temperature: 0.7,
       max_tokens: 500,

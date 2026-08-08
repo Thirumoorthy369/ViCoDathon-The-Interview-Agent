@@ -137,3 +137,8 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Prompt:** UI is still have some issues - Please analyse the UI - make it as professional like one experience UI/UX designs like it needs to be
 **Result:** Removed clashing global card overrides in LandingScreen.jsx to restore true glassmorphism styles, added a 90px bottom scroll margin to prevent action bar overlays, customized the scrollbars to be thin/rounded, and color-coded candidate metric badges (green for completion, terracotta for commits).
 **Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css
+
+### 2026-08-08 04:00 PM — Antigravity — Turn Latency & Session Length Optimization
+**Prompt:** Here tha AI fo rht e first 76 questions fine but from 7th question it takes more time proces and sometime the answer will be some irrelevant like "fewufig13e3r32" means it trakes more time - latency increases and it is fixed asking 14 questions but you know the requirements then why ? make it as good one and tell what you do for this as a solution
+**Result:** Removed duplicate candidate responses in the LLM messages assembly inside groq.js (which triggered model attention loops and latency surges). Optimized server.js completion conditions to wrap up the interview cleanly as soon as the minimum requirements (8 questions, 4 days) are met, rather than pushing to the 14-question limit.
+**Files touched:** backend/groq.js, backend/server.js
