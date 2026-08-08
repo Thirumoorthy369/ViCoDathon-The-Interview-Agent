@@ -54,6 +54,15 @@ const candidatesData = JSON.parse(readFileSync(join(dataDir, 'candidates.json'),
 console.log(`✓ Loaded curriculum: ${curriculum.days.length} days, ${curriculum.modules.length} modules`);
 console.log(`✓ Loaded candidates: ${candidatesData.candidates.length} profiles`);
 
+// --- Root health check endpoint ---
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: '🎤 AI Interview Agent backend API is running successfully!',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // --- In-memory session store (TRD.md §3.1) ---
 const sessions = new Map();
 

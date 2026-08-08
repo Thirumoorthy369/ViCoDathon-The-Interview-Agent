@@ -127,6 +127,3 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Prompt:** Error: ENOENT: no such file or directory, open '/data/curriculum.json' why it is crashed
 **Result:** Copied the data folder into backend/data and updated server.js and test-planner.js path resolution to read from join(__dirname, 'data'), ensuring that static data files are packaged inside the Railway build container.
 **Files touched:** backend/server.js, backend/test-planner.js
-
-
-
