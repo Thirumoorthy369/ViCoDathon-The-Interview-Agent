@@ -16,3 +16,33 @@
 - `.gitignore` follows Security.md §6 recommendations.
 - `.env.example` committed with empty `GROQ_API_KEY` for judge reproducibility.
 
+## Entry 2 — Session Store & API Skeleton (Step 3)
+**Date:** 2026-08-08
+**What:** Implementing POST /api/interview with all three flow shapes
+**Prompt/approach:** Built the API contract routing logic from technical-spec.md verbatim — Start (has `candidate`), Turn (has `message`), End (automatic on completion). Used the AI to generate comprehensive input validation and error handling per Security.md §3.
+**Design decisions:**
+- Implemented all error cases from App-Flow.md §2: unknown sessionId → 404, done session → 409, malformed request → 400, oversized message → 413.
+- Message cap at 5000 chars to prevent pathological LLM costs.
+- Session cleanup via setInterval (30-min TTL for done sessions).
+
+## Entry 3 — Interview Planner / Personalization Engine (Step 4)
+**Date:** 2026-08-08
+**What:** Deterministic question plan generation from candidate data
+**Prompt/approach:** Translated the scoring algorithm from TRD.md §4 into code: `skipped=10, failed=9, attempts>=3=7, first-try=3, capstone=8`. Added role-based modulation (DevOps → boost deployment days, AI/ML → boost embeddings/agents days). Tested against 5 diverse candidate profiles to verify personalization.
+**Design decisions:**
+- Priority scoring is purely deterministic (no LLM) — faster and reproducible.
+- Role modulation adds ±1 priority rather than overriding, so signal strength still dominates.
+- Capped plan at 10 entries — with 1-2 follow-ups per topic, this naturally yields 8-14 total questions.
+- Tested: Sarah Johnson (skipped Day 29 → #1), Emily Chen (all first-try → tradeoff questions), Gerald Combs (3 failures → foundational), Michael Brown (DevOps → deployment boost), Mia Alvarez (5 skipped → all foundational).
+
+## Entry 4 — Groq LLM Orchestration (Steps 5 & 6)
+**Date:** 2026-08-08
+**What:** Per-turn interview replies and structured feedback via Groq
+**Prompt/approach:** Built the system prompt to enforce all 10 interviewer persona rules from App-Flow.md §3 — one question at a time, acknowledge before pivoting, reference specifics in follow-ups, adapt difficulty to signal, natural transitions, time-box follow-ups, stay in curriculum scope. Used `response_format: { type: "json_object" }` for feedback to get reliable structured output.
+**Design decisions:**
+- **Model:** `llama-3.3-70b-versatile` for strongest reasoning (TRD.md §5.3).
+- **Temperature:** 0.7 for turns (natural conversation), 0.5 for feedback (more focused).
+- **Follow-up detection:** Hybrid approach — count follow-ups per topic (max 2) + check if LLM mentions next topic keywords.
+- **Feedback retry:** Single corrective retry on parse failure per Security.md §4, with fallback to static feedback if both attempts fail.
+- **System prompt includes dynamic context:** current plan entry, coverage summary, questions remaining — so the LLM knows the interview's state at every turn.
+

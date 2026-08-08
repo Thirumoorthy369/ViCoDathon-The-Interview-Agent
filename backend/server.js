@@ -17,6 +17,7 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { buildInterviewPlan, summarizePlan } from './planner.js';
+import { generateInterviewReply, generateOpeningMessage, generateFeedback } from './groq.js';
 
 dotenv.config();
 
@@ -54,19 +55,7 @@ console.log(`✓ Loaded curriculum: ${curriculum.days.length} days, ${curriculum
 console.log(`✓ Loaded candidates: ${candidatesData.candidates.length} profiles`);
 
 // --- In-memory session store (TRD.md §3.1) ---
-// Map<string, InterviewSession>
-// InterviewSession shape defined in TRD.md §3.2
 const sessions = new Map();
-
-// --- Helper: Find which module a curriculum day belongs to ---
-function getModuleForDay(dayNum) {
-  for (const mod of curriculum.modules) {
-    if (dayNum >= mod.days[0] && dayNum <= mod.days[1]) {
-      return mod;
-    }
-  }
-  return null;
-}
 
 // --- Helper: Get curriculum day details ---
 function getCurriculumDay(dayNum) {
@@ -125,13 +114,6 @@ app.get('/api/candidates/:id', (req, res) => {
  * 1. START: { sessionId, candidate } → creates session, returns opening question
  * 2. TURN:  { sessionId, message }   → processes answer, returns next question  
  * 3. END:   automatically triggered when completion conditions met
- * 
- * Error cases:
- * - Missing/invalid sessionId → 400
- * - Unknown sessionId on Turn → 404  
- * - Session already done → 409
- * - Missing candidate on Start → 400
- * - Message too long → 413
  */
 app.post('/api/interview', async (req, res) => {
   try {
@@ -142,7 +124,6 @@ app.post('/api/interview', async (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid sessionId' });
     }
 
-    // Determine flow shape: START vs TURN
     const existingSession = sessions.get(sessionId);
 
     // --- CASE: Session already done (App-Flow.md §2, STATE: DONE) ---
@@ -176,22 +157,20 @@ app.post('/api/interview', async (req, res) => {
 
       sessions.set(sessionId, session);
 
-      // Generate opening message (stubbed — Step 5 will use Groq)
-      const firstQuestion = questionPlan[0];
-      const currDay = getCurriculumDay(firstQuestion.day);
-      const reply = `Welcome, ${candidate.member.name}. I'm your technical interviewer today. Let's explore your experience with the AI Cohort program.\n\nLet's start with ${currDay ? currDay.title : 'your first topic'}. ${getOpeningQuestion(firstQuestion, currDay, candidate)}`;
+      // Generate LLM-powered opening message with first question
+      const firstPlan = questionPlan[0];
+      const reply = await generateOpeningMessage(session, firstPlan);
 
       // Record in transcript
       session.transcript.push({ role: 'interviewer', text: reply });
       session.questionCount = 1;
-      session.askedDays.add(firstQuestion.day);
+      session.askedDays.add(firstPlan.day);
 
       return res.json({ reply, done: false });
     }
 
     // --- CASE: TURN (has message, existing session) ---
     if (message !== undefined && existingSession) {
-      // Validate message (Security.md §3)
       if (typeof message !== 'string') {
         return res.status(400).json({ error: 'Message must be a string' });
       }
@@ -204,43 +183,51 @@ app.post('/api/interview', async (req, res) => {
       // Append candidate's message to transcript
       session.transcript.push({ role: 'candidate', text: message });
 
-      // Generate next reply (stubbed — Step 5 will use Groq LLM)
-      // For now, advance through the question plan mechanically
-      session.currentPlanIndex++;
+      // Get current and next plan entries
+      const currentPlan = session.questionPlan[session.currentPlanIndex];
+      const nextPlan = session.currentPlanIndex + 1 < session.questionPlan.length 
+        ? session.questionPlan[session.currentPlanIndex + 1] 
+        : null;
+
+      // Generate LLM reply with follow-up/advance decision
+      const { reply, shouldAdvance } = await generateInterviewReply(
+        session, message, currentPlan, nextPlan
+      );
+
+      // Update session state based on LLM's decision
+      if (shouldAdvance && nextPlan) {
+        session.currentPlanIndex++;
+        session.askedDays.add(nextPlan.day);
+      }
       session.questionCount++;
 
-      // Check completion condition (TRD.md §3.2)
-      const minQuestions = 8;
-      const minDays = 4;
-      const maxQuestions = 14;
-      const isComplete = (
-        session.questionCount >= minQuestions &&
-        session.askedDays.size >= minDays
-      ) || session.questionCount >= maxQuestions;
-
-      if (isComplete || session.currentPlanIndex >= session.questionPlan.length) {
-        // End the interview (Step 6 will generate real feedback via Groq)
-        session.status = 'done';
-        const feedback = {
-          summary: `Interview with ${session.candidate.member.name} covered ${session.askedDays.size} curriculum areas across ${session.questionCount} questions. Full feedback will be generated by the LLM in Step 6.`,
-          strengths: ['Placeholder — real feedback pending LLM integration'],
-          gaps: ['Placeholder — real feedback pending LLM integration'],
-          next: ['Placeholder — real feedback pending LLM integration']
-        };
-        
-        const reply = 'Interview completed.';
-        session.transcript.push({ role: 'interviewer', text: reply });
-
-        return res.json({ reply, done: true, feedback });
-      }
-
-      // Ask next question
-      const nextPlan = session.questionPlan[session.currentPlanIndex];
-      const nextDay = getCurriculumDay(nextPlan.day);
-      session.askedDays.add(nextPlan.day);
-
-      const reply = `Thank you for that response. Let me ask you about ${nextDay ? nextDay.title : 'the next topic'}. ${getOpeningQuestion(nextPlan, nextDay, session.candidate)}`;
+      // Record in transcript
       session.transcript.push({ role: 'interviewer', text: reply });
+
+      // Check completion condition (TRD.md §3.2)
+      const MIN_QUESTIONS = 8;
+      const MIN_DAYS = 4;
+      const MAX_QUESTIONS = 14;
+      
+      const meetsMinimums = session.questionCount >= MIN_QUESTIONS && session.askedDays.size >= MIN_DAYS;
+      const hitCeiling = session.questionCount >= MAX_QUESTIONS;
+      const exhaustedPlan = session.currentPlanIndex >= session.questionPlan.length - 1 && meetsMinimums;
+
+      if (meetsMinimums && (hitCeiling || exhaustedPlan || !nextPlan)) {
+        // --- End the interview (App-Flow.md §2, STATE: ENDING → DONE) ---
+        console.log(`✓ Interview ending for ${session.candidate.member.name}: ${session.questionCount} questions, ${session.askedDays.size} days`);
+        
+        // Generate structured feedback via LLM (TRD.md §5.4)
+        const feedback = await generateFeedback(session);
+
+        session.status = 'done';
+        session.completedAt = Date.now();
+
+        const endReply = 'Interview completed.';
+        session.transcript.push({ role: 'interviewer', text: endReply });
+
+        return res.json({ reply: endReply, done: true, feedback });
+      }
 
       return res.json({ reply, done: false });
     }
@@ -259,49 +246,27 @@ app.post('/api/interview', async (req, res) => {
 
   } catch (error) {
     console.error('Error in /api/interview:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error. Please try again.' });
   }
 });
 
-// Question plan is now built by planner.js (Step 4 — Personalization Engine)
-
-/**
- * Generate a stub opening question based on the plan rationale.
- * Step 5 will replace this with proper LLM-generated questions.
- */
-function getOpeningQuestion(planEntry, currDay, candidate) {
-  const objectives = currDay ? currDay.objectives.join(', ') : '';
-  
-  switch (planEntry.rationale) {
-    case 'skipped':
-      return `I noticed you skipped this module. Can you tell me what you understand about ${currDay ? currDay.title : 'this topic'} and its core concepts?`;
-    case 'failed':
-      return `This was a challenging area. Can you walk me through your understanding of the key concepts in ${currDay ? currDay.title : 'this topic'}?`;
-    case 'high_attempts_weak':
-      return `You worked through this area over several attempts. What were the main challenges you faced, and how did you eventually approach ${currDay ? currDay.title : 'this topic'}?`;
-    case 'low_attempts_high_confidence':
-      return `You seemed to grasp this quickly. Can you explain why you chose the approach you did for ${currDay ? currDay.title : 'this topic'}, and what alternatives you considered?`;
-    case 'capstone_anchor':
-      return `Walk me through your capstone project architecture. What were the key technical decisions you made, and why?`;
-    default:
-      return `Tell me about your experience with ${currDay ? currDay.title : 'this topic'}.`;
-  }
-}
-
 // --- Optional: Session cleanup (TRD.md §3.1 hygiene) ---
-// Sweep done sessions after 30 minutes
 setInterval(() => {
   const now = Date.now();
   for (const [id, session] of sessions) {
     if (session.status === 'done' && session.completedAt && (now - session.completedAt > 30 * 60 * 1000)) {
       sessions.delete(id);
+      console.log(`✓ Cleaned up session ${id}`);
     }
   }
-}, 5 * 60 * 1000); // Check every 5 minutes
+}, 5 * 60 * 1000);
 
 // --- Start server ---
 app.listen(PORT, () => {
   console.log(`🎤 AI Interview Agent backend running on http://localhost:${PORT}`);
+  if (!process.env.GROQ_API_KEY) {
+    console.warn('⚠ GROQ_API_KEY not set — LLM calls will fail. Set it in .env');
+  }
 });
 
 export { curriculum, candidatesData, sessions };
