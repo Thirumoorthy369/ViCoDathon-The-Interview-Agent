@@ -68,7 +68,6 @@
 .landing-hero {
   text-align: center;
   margin-bottom: var(--space-xl);
-  opacity: 0; /* Animated by anime.js */
 }
 
 .landing-logo {
@@ -89,7 +88,6 @@
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: white;
   box-shadow: 0 8px 20px rgba(194, 84, 10, 0.25);
-  transform: scale(0); /* Animated by anime.js */
 }
 
 .landing-logo-text {
@@ -128,7 +126,6 @@
   justify-content: space-between;
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
-  opacity: 0; /* Animated by anime.js */
 }
 
 .landing-search {
@@ -361,7 +358,6 @@
 .landing-action {
   text-align: center;
   padding-top: var(--space-lg);
-  opacity: 0; /* Animated by anime.js */
   border-top: 1.5px solid rgba(232, 226, 218, 0.5);
   margin-top: var(--space-md);
 }
