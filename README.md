@@ -2,9 +2,15 @@
 
 > **"Build the interviewer, not the interview."**
 
+[![AI Usage Log](https://img.shields.io/badge/AI_Usage_Log-PROMPTS.md-blue?style=for-the-badge&logo=gitbook&logoColor=white)](./PROMPTS.md)
 [![Vercel Deployment](https://img.shields.io/badge/Frontend-Deployed_on_Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vicodathon-the-interview-agent.vercel.app/)
 [![Railway Backend](https://img.shields.io/badge/Backend-Hosted_on_Railway-1e1e24?style=for-the-badge&logo=railway&logoColor=white)](https://vicodathon-the-interview-agent-production.up.railway.app/)
 [![AI Model](https://img.shields.io/badge/Model-Llama_3.1_8B_Instant-F26A36?style=for-the-badge&logo=meta&logoColor=white)](https://console.groq.com)
+
+> [!IMPORTANT]
+> 📑 **JUDGES QUICK LINK: AI Usage & Prompt Log**
+> The required AI Usage Log documenting all prompt sequences, prompts, and results of our AI-assisted developer pairing session is located at:
+> 🔗 **[PROMPTS.md](./PROMPTS.md)** (Includes links to PRD, TRD, App-Flow, and all 33 incremental development steps).
 
 An enterprise-grade, AI-powered technical interviewer that conducts realistic, adaptive, multi-turn dialogues tailored to each candidate's learning journey. Built explicitly for the enterprise AI engineering program, it analyzes learning signals (skipped days, struggles, capstone status) to conduct a rigorous and personalized technical assessment.
 
