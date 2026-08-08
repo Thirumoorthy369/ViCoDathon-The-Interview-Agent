@@ -99,6 +99,13 @@ export default function InterviewScreen({
     }
   }, [input]);
 
+  // Auto-focus input when the user is prompted to type (isLoading becomes false)
+  useEffect(() => {
+    if (!isLoading && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isLoading]);
+
   const handleSend = () => {
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;

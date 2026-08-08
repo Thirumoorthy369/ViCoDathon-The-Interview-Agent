@@ -216,7 +216,7 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
               <button
                 key={c.id}
                 id={`candidate-${c.id}`}
-                className={`candidate-card card card-interactive ${selectedId === c.id ? 'selected' : ''}`}
+                className={`candidate-card ${selectedId === c.id ? 'selected' : ''}`}
                 onClick={() => handleSelect(c.id)}
               >
                 {selectedId === c.id && (

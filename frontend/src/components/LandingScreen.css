@@ -173,6 +173,25 @@
   max-height: 480px;
   overflow-y: auto;
   padding: var(--space-xs);
+  padding-bottom: 90px; /* Space so bottom row is not covered by the floating action bar */
+}
+
+/* Modern Custom Scrollbar for Candidates list */
+.landing-candidates::-webkit-scrollbar {
+  width: 6px;
+}
+
+.landing-candidates::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.landing-candidates::-webkit-scrollbar-thumb {
+  background: rgba(43, 38, 34, 0.12);
+  border-radius: var(--radius-full);
+}
+
+.landing-candidates::-webkit-scrollbar-thumb:hover {
+  background: rgba(194, 84, 10, 0.3);
 }
 
 .candidate-card {
@@ -295,17 +314,34 @@
 
 .candidate-stat-pill {
   flex: 1;
-  background: rgba(240, 236, 230, 0.5);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   font-size: 0.75rem;
-  color: var(--color-text-muted);
   text-align: center;
-  border: 1px solid rgba(232, 226, 218, 0.4);
+  border: 1px solid transparent;
+  transition: all var(--transition-base);
 }
 
-.candidate-stat-pill strong {
-  color: var(--color-text);
+/* Completion Stat Pill (Green) */
+.candidate-stat-pill:first-child {
+  background: rgba(46, 125, 79, 0.05);
+  color: #2e7d50;
+  border-color: rgba(46, 125, 79, 0.1);
+}
+
+.candidate-stat-pill:first-child strong {
+  color: #1b5e20;
+}
+
+/* Commits Stat Pill (Terracotta/Amber) */
+.candidate-stat-pill:last-child {
+  background: rgba(194, 84, 10, 0.05);
+  color: var(--color-primary);
+  border-color: rgba(194, 84, 10, 0.1);
+}
+
+.candidate-stat-pill:last-child strong {
+  color: var(--color-primary-hover);
 }
 
 /* Interactive card hover states */

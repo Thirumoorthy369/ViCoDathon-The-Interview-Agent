@@ -127,3 +127,13 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Prompt:** Error: ENOENT: no such file or directory, open '/data/curriculum.json' why it is crashed
 **Result:** Copied the data folder into backend/data and updated server.js and test-planner.js path resolution to read from join(__dirname, 'data'), ensuring that static data files are packaged inside the Railway build container.
 **Files touched:** backend/server.js, backend/test-planner.js
+
+### 2026-08-08 03:40 PM — Antigravity — Text Area Input Auto-Focus
+**Prompt:** See here whenever the question i am asking it needs to automatically make the text area to be ready to type but here everytime the user needs to lclick the text box to make it as active to type - change this
+**Result:** Added a React useEffect hook to InterviewScreen.jsx that triggers textarea focus actions whenever the candidate view mounts or when the interviewer's typing status transitions from busy to ready, removing manual keyboard clicks.
+**Files touched:** frontend/src/components/InterviewScreen.jsx
+
+### 2026-08-08 03:50 PM — Antigravity — UI Polishing & Card Layout Fixes
+**Prompt:** UI is still have some issues - Please analyse the UI - make it as professional like one experience UI/UX designs like it needs to be
+**Result:** Removed clashing global card overrides in LandingScreen.jsx to restore true glassmorphism styles, added a 90px bottom scroll margin to prevent action bar overlays, customized the scrollbars to be thin/rounded, and color-coded candidate metric badges (green for completion, terracotta for commits).
+**Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css
