@@ -80,3 +80,8 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Result:** Redesigned LandingScreen.css and LandingScreen.jsx to transition from flat vertical rows to a responsive 3-column glassmorphic candidate profile card grid layout, including visual gradient avatars, stat pills, selected tags, and slow-pulsing background mesh circles.
 **Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css
 
+### 2026-08-08 02:10 PM — Antigravity — Layout and spacing adjustments
+**Prompt:** Just think like a professional web designer and ui ux designer and see that ui If it this ui is fit for this product as it is used for hapatha If it is yes or not make that you at least need and professional look start interview is going under Not like it'll be like a professional day just cheque with the heating everything
+**Result:** Fixed the Flexbox viewport cutoff bug by allowing body-level vertical scrolling, centered the search bar to keep horizontal balance on wide monitors, and converted candidate experience descriptions into clean primary-colored tag badges.
+**Files touched:** frontend/src/components/LandingScreen.css
+
