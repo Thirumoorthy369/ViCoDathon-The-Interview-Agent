@@ -1,14 +1,17 @@
-# PROMPTS.md — AI Usage Log
+# 📑 AI Prompt & Development Logs
 
-This log records every meaningful AI prompt used to plan and build the AI Interview Agent, in chronological order, across both **Claude** (planning/spec docs) and **Google Antigravity** (implementation). It exists to satisfy the hackathon's Stage 1 (must be present) and Stage 2 (must genuinely correspond to what was built) requirements.
+> This log records every meaningful AI prompt used to plan and build **ViCoDathon — The AI Interview Agent**, in chronological order, across both **Claude** (Phase 1 Planning) and **Google Antigravity** (Phase 2 Implementation).
+
+---
 
 ### 🔗 Planning Specification Documents
-* [PRD.md](file:///d:/Vicodathon/PRD.md) — Product Requirements Document (Goals, Personas, Features)
-* [TRD.md](file:///d:/Vicodathon/TRD.md) — Technical Requirements Document (Endpoints, Planner, Groq Config)
-* [UI-Design.md](file:///d:/Vicodathon/UI-Design.md) — UI & Design Spec (Terracotta Palette, Breaks, Screens)
-* [App-Flow.md](file:///d:/Vicodathon/App-Flow.md) — Application Flow (State Machine, Heuristics, Loops)
-* [Security.md](file:///d:/Vicodathon/Security.md) — Compliance & Security (Validators, Cache Limits, Sanitization)
-* [Implementation.md](file:///d:/Vicodathon/Implementation.md) — Development Steps checklist
+Navigate directly to the core design documents created during the planning phase:
+* 📄 **[PRD.md](./PRD.md)** — Product Requirements Document (Target metrics, user personas)
+* ⚙️ **[TRD.md](./TRD.md)** — Technical Requirements Document (Data models, API structure, algorithms)
+* 🎨 **[UI-Design.md](./UI-Design.md)** — UI & Layout Specifications (Color schemes, responsive rules)
+* 🔄 **[App-Flow.md](./App-Flow.md)** — Application State & Heuristics (Interview loop, fallback pathways)
+* 🔒 **[Security.md](./Security.md)** — Security & Safety Controls (Sanitization, API caps, retry limits)
+* 📋 **[Implementation.md](./Implementation.md)** — Development Feature Checklist (Phased milestones)
 
 ---
 
@@ -142,3 +145,8 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Prompt:** Here tha AI fo rht e first 76 questions fine but from 7th question it takes more time proces and sometime the answer will be some irrelevant like "fewufig13e3r32" means it trakes more time - latency increases and it is fixed asking 14 questions but you know the requirements then why ? make it as good one and tell what you do for this as a solution
 **Result:** Removed duplicate candidate responses in the LLM messages assembly inside groq.js (which triggered model attention loops and latency surges). Optimized server.js completion conditions to wrap up the interview cleanly as soon as the minimum requirements (8 questions, 4 days) are met, rather than pushing to the 14-question limit.
 **Files touched:** backend/groq.js, backend/server.js
+
+### 2026-08-08 04:10 PM — Antigravity — Product Pitch Integration in README
+**Prompt:** you told about deploy bu ti need readme to talk about the product right?
+**Result:** Expanded README.md to describe the product's core value proposition, outlining the user problem (articulation gaps, feedback mismatches), the agent's simulator role (Senior Engineering Manager), and the core candidate user journey (Plan, Chat, Report).
+**Files touched:** README.md
