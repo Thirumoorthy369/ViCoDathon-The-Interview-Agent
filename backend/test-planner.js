@@ -9,7 +9,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataDir = join(__dirname, '..', 'data');
+const dataDir = join(__dirname, 'data');
 const curriculum = JSON.parse(readFileSync(join(dataDir, 'curriculum.json'), 'utf-8'));
 const candidatesData = JSON.parse(readFileSync(join(dataDir, 'candidates.json'), 'utf-8'));
 

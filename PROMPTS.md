@@ -123,5 +123,10 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Result:** Created frontend/.env containing VITE_API_URL and provided detailed placeholders and guidance on how the user should link their Vercel frontend URL to their Railway backend URL.
 **Files touched:** frontend/.env
 
+### 2026-08-08 03:30 PM — Antigravity — Fix Deployed File Paths
+**Prompt:** Error: ENOENT: no such file or directory, open '/data/curriculum.json' why it is crashed
+**Result:** Copied the data folder into backend/data and updated server.js and test-planner.js path resolution to read from join(__dirname, 'data'), ensuring that static data files are packaged inside the Railway build container.
+**Files touched:** backend/server.js, backend/test-planner.js
+
 
 

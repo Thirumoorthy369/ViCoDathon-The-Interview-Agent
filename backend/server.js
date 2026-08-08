@@ -47,7 +47,7 @@ app.use(cors({
 app.use(express.json({ limit: '10kb' })); // Cap request body size (Security.md §3)
 
 // --- Load static data at startup (TRD.md §7) ---
-const dataDir = join(__dirname, '..', 'data');
+const dataDir = join(__dirname, 'data');
 const curriculum = JSON.parse(readFileSync(join(dataDir, 'curriculum.json'), 'utf-8'));
 const candidatesData = JSON.parse(readFileSync(join(dataDir, 'candidates.json'), 'utf-8'));
 
