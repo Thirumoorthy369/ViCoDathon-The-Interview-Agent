@@ -47,7 +47,9 @@ npm run dev
 | Variable | Where | Description |
 |----------|-------|-------------|
 | `GROQ_API_KEY` | `backend/.env` | Your Groq API key (starts with `gsk_...`) |
-| `VITE_API_URL` | `frontend/.env` | Backend URL (defaults to `http://localhost:3001`) |
+| `FRONTEND_URL` | `backend/.env` | Allowed Frontend client URL for production CORS verification |
+| `VITE_API_URL` | `frontend/.env` | Backend API URL (defaults to `http://localhost:3001` in dev) |
+
 
 ## Live Demo
 

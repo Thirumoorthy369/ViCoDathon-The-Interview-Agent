@@ -2,6 +2,14 @@
 
 This log records every meaningful AI prompt used to plan and build the AI Interview Agent, in chronological order, across both **Claude** (planning/spec docs) and **Google Antigravity** (implementation). It exists to satisfy the hackathon's Stage 1 (must be present) and Stage 2 (must genuinely correspond to what was built) requirements.
 
+### 🔗 Planning Specification Documents
+* [PRD.md](file:///d:/Vicodathon/PRD.md) — Product Requirements Document (Goals, Personas, Features)
+* [TRD.md](file:///d:/Vicodathon/TRD.md) — Technical Requirements Document (Endpoints, Planner, Groq Config)
+* [UI-Design.md](file:///d:/Vicodathon/UI-Design.md) — UI & Design Spec (Terracotta Palette, Breaks, Screens)
+* [App-Flow.md](file:///d:/Vicodathon/App-Flow.md) — Application Flow (State Machine, Heuristics, Loops)
+* [Security.md](file:///d:/Vicodathon/Security.md) — Compliance & Security (Validators, Cache Limits, Sanitization)
+* [Implementation.md](file:///d:/Vicodathon/Implementation.md) — Development Steps checklist
+
 ---
 
 ## Phase 1 — Planning & Specification (Claude)
