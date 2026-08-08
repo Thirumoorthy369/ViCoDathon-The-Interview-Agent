@@ -22,7 +22,42 @@ const client = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
 });
 
-const MODEL = 'llama-3.1-8b-instant';
+// Resilient fallback models loop for hackathon durability (Llama 3.1 8B -> Qwen 3.6 27B -> Llama 3.3 70B -> GPT-OSS 20B)
+const MODELS = [
+  'llama-3.1-8b-instant',
+  'qwen/qwen3.6-27b',
+  'llama-3.3-70b-versatile',
+  'openai/gpt-oss-20b'
+];
+
+/**
+ * Helper to call Groq API with robust model fallback failover (TRD.md §5.5)
+ */
+async function callGroqWithFallback(options) {
+  let lastError;
+  for (const model of MODELS) {
+    try {
+      console.log(`[LLM] Attempting API call using model: ${model}`);
+      const response = await client.chat.completions.create({
+        ...options,
+        model: model
+      });
+      console.log(`[LLM] Successfully completed call using: ${model}`);
+      return response;
+    } catch (err) {
+      console.error(`[LLM] Error with model ${model}:`, err.message);
+      lastError = err;
+      
+      // Do not retry on 401 Authentication errors (invalid API key)
+      if (err.status === 401 || err.message.includes('401') || err.message.includes('API key')) {
+        throw err;
+      }
+      
+      console.warn(`[LLM] Rate limited or server error with ${model}. Trying next fallback...`);
+    }
+  }
+  throw lastError;
+}
 
 /**
  * Build the interviewer system prompt (TRD.md §5.4, App-Flow.md §3)
@@ -169,8 +204,7 @@ Choose (a) or (b) based on the quality and depth of the candidate's response.`;
   }
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODEL,
+    const response = await callGroqWithFallback({
       messages: [
         { role: 'system', content: systemPrompt + advanceInstruction },
         ...conversationMessages
@@ -224,8 +258,7 @@ Rules:
 - Total response should be 3-5 sentences max`;
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODEL,
+    const response = await callGroqWithFallback({
       messages: [
         { role: 'system', content: systemPrompt }
       ],
@@ -335,8 +368,7 @@ IMPORTANT RULES:
 
 
   try {
-    const response = await client.chat.completions.create({
-      model: MODEL,
+    const response = await callGroqWithFallback({
       messages: [
         { role: 'system', content: 'You are an expert technical interview evaluator. Respond only with valid JSON.' },
         { role: 'user', content: feedbackPrompt }
@@ -376,8 +408,7 @@ IMPORTANT RULES:
  */
 async function retryFeedbackGeneration(session, previousOutput) {
   try {
-    const response = await client.chat.completions.create({
-      model: MODEL,
+    const response = await callGroqWithFallback({
       messages: [
         { role: 'system', content: 'You are an expert technical interview evaluator. You MUST respond with ONLY a valid JSON object, nothing else.' },
         { role: 'user', content: `Your previous response was not valid JSON or did not match the required schema. Please try again.

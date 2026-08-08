@@ -165,3 +165,13 @@ Navigate directly to the core design documents created during the planning phase
 **Prompt:** Frontend crashed LandingScreen.jsx:289 Uncaught TypeError: Cannot read properties of undefined (reading 'name') use the backend url added in env of frontend
 **Result:** Fixed a schema mismatch crash where candidates from the overview list lacked the nested .member object structure. Resolved by computing selectedLocalCandidate directly from client-state data for zero-latency label rendering while loading full profile detail missions in the background.
 **Files touched:** frontend/src/components/LandingScreen.jsx
+
+### 2026-08-09 12:45 AM — Antigravity — Groq Model Fallback Failover Loop
+**Prompt:** is there fallback model is there or not
+**Result:** Implemented a callGroqWithFallback wrapper in groq.js that automatically catches API failures (such as rate limits or server overloads) on llama-3.1-8b-instant and tries alternative free-tier models (gemma2-9b-it, mixtral-8x7b-32768, llama-3.3-70b-versatile) sequentially.
+**Files touched:** backend/groq.js
+
+### 2026-08-09 12:55 AM — Antigravity — Active Model Verification & list Sync
+**Prompt:** and tell whether we need to change the groq apikey? and check with every model once whether everythins is in working condition
+**Result:** Created and executed a live query verification script in the backend. Discovered that gemma2-9b-it and mixtral-8x7b-32768 were decommissioned by Groq. Synced the MODELS array in groq.js to target active models: llama-3.1-8b-instant, qwen/qwen3.6-27b, llama-3.3-70b-versatile, and openai/gpt-oss-20b.
+**Files touched:** backend/groq.js
