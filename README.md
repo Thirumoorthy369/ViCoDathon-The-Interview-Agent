@@ -114,6 +114,12 @@ npm run dev # Runs Vite dev server on port 5173
 
 ---
 
-## 📑 AI Usage Log
+## 📄 License
 
-Every prompt used to plan, refine, and implement this application across Claude (specifications) and Google Antigravity (implementation) is logged chronologically in [PROMPTS.md](./PROMPTS.md).
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🧡 Acknowledgments
+
+* Built with passion for the **ViCoDathon** Hackathon.
+* Special thanks to the Google **Antigravity** developer pairing system.
+* Powered by Groq's high-speed **Llama-3.1-8b-instant** and **Llama-3.3-70b-versatile** models.
