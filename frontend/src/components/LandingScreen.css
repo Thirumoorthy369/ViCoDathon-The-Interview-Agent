@@ -209,6 +209,7 @@
   position: relative;
   transition: all var(--transition-base);
   opacity: 0; /* Animated by anime.js */
+  cursor: pointer; /* Hand pointer cursor for better click UX */
 }
 
 /* Top corner selected indicator tag */
