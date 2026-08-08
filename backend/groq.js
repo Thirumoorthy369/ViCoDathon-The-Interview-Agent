@@ -2,7 +2,7 @@
  * Groq LLM Orchestrator (TRD.md §5)
  * 
  * Handles all LLM interactions via Groq's OpenAI-compatible API.
- * Uses llama-3.3-70b-versatile as the default model.
+ * Uses llama-3.1-8b-instant as the default free-tier model.
  * 
  * Two main functions:
  * 1. generateInterviewReply() — per-turn question/follow-up generation
@@ -12,6 +12,9 @@
  */
 
 import OpenAI from 'openai';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Initialize Groq client via OpenAI SDK (TRD.md §5.2)
 const client = new OpenAI({
@@ -19,7 +22,7 @@ const client = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
 });
 
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'llama-3.1-8b-instant';
 
 /**
  * Build the interviewer system prompt (TRD.md §5.4, App-Flow.md §3)

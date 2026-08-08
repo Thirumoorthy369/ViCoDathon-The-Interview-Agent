@@ -7,7 +7,7 @@
  * 3. Feedback / Results Screen
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import LandingScreen from './components/LandingScreen';
 import InterviewScreen from './components/InterviewScreen';
 import FeedbackScreen from './components/FeedbackScreen';
@@ -17,14 +17,63 @@ import './App.css';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 function App() {
-  const [screen, setScreen] = useState('landing'); // 'landing' | 'interview' | 'feedback'
-  const [sessionId, setSessionId] = useState(null);
-  const [candidate, setCandidate] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [feedback, setFeedback] = useState(null);
-  const [questionCount, setQuestionCount] = useState(0);
+  const [screen, setScreen] = useState(() => localStorage.getItem('interview_screen') || 'landing');
+  const [sessionId, setSessionId] = useState(() => localStorage.getItem('interview_sessionId') || null);
+  const [candidate, setCandidate] = useState(() => {
+    const raw = localStorage.getItem('interview_candidate');
+    return raw ? JSON.parse(raw) : null;
+  });
+  const [messages, setMessages] = useState(() => {
+    const raw = localStorage.getItem('interview_messages');
+    return raw ? JSON.parse(raw) : [];
+  });
+  const [feedback, setFeedback] = useState(() => {
+    const raw = localStorage.getItem('interview_feedback');
+    return raw ? JSON.parse(raw) : null;
+  });
+  const [questionCount, setQuestionCount] = useState(() => {
+    const raw = localStorage.getItem('interview_questionCount');
+    return raw ? parseInt(raw, 10) : 0;
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Synchronize state changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('interview_screen', screen);
+  }, [screen]);
+
+  useEffect(() => {
+    if (sessionId) {
+      localStorage.setItem('interview_sessionId', sessionId);
+    } else {
+      localStorage.removeItem('interview_sessionId');
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (candidate) {
+      localStorage.setItem('interview_candidate', JSON.stringify(candidate));
+    } else {
+      localStorage.removeItem('interview_candidate');
+    }
+  }, [candidate]);
+
+  useEffect(() => {
+    localStorage.setItem('interview_messages', JSON.stringify(messages));
+  }, [messages]);
+
+  useEffect(() => {
+    if (feedback) {
+      localStorage.setItem('interview_feedback', JSON.stringify(feedback));
+    } else {
+      localStorage.removeItem('interview_feedback');
+    }
+  }, [feedback]);
+
+  useEffect(() => {
+    localStorage.setItem('interview_questionCount', questionCount.toString());
+  }, [questionCount]);
 
   /**
    * Start a new interview session
@@ -140,6 +189,14 @@ function App() {
     setQuestionCount(0);
     setError(null);
     setIsLoading(false);
+
+    // Clear all localStorage entries
+    localStorage.removeItem('interview_screen');
+    localStorage.removeItem('interview_sessionId');
+    localStorage.removeItem('interview_candidate');
+    localStorage.removeItem('interview_messages');
+    localStorage.removeItem('interview_feedback');
+    localStorage.removeItem('interview_questionCount');
   }, []);
 
   return (

@@ -2,7 +2,7 @@
  * AI Interview Agent — Backend Server
  * 
  * Express server exposing POST /api/interview as required by technical-spec.md.
- * Uses Groq (llama-3.3-70b-versatile) as the exclusive LLM provider via the
+ * Uses Groq (llama-3.1-8b-instant) as the exclusive LLM provider via the
  * OpenAI-compatible SDK (TRD.md §5).
  * 
  * Session state is held in-memory (Map<sessionId, InterviewSession>) — no database.
@@ -141,7 +141,6 @@ app.post('/api/interview', async (req, res) => {
 
       // Build the question plan using the Personalization Engine (TRD.md §4)
       const questionPlan = buildInterviewPlan(candidate, curriculum);
-      console.log(`✓ Plan for ${candidate.member.name}:`, summarizePlan(questionPlan));
 
           // Initialize session (TRD.md §3.2)
       const session = {
@@ -228,7 +227,6 @@ app.post('/api/interview', async (req, res) => {
 
       if (isComplete) {
         // --- End the interview (App-Flow.md §2, STATE: ENDING → DONE) ---
-        console.log(`✓ Interview ending for ${session.candidate.member.name}: ${session.questionCount} questions, ${session.askedDays.size} days`);
         
         // Generate structured feedback via LLM (TRD.md §5.4)
         const feedback = await generateFeedback(session);
@@ -269,7 +267,6 @@ setInterval(() => {
   for (const [id, session] of sessions) {
     if (session.status === 'done' && session.completedAt && (now - session.completedAt > 30 * 60 * 1000)) {
       sessions.delete(id);
-      console.log(`✓ Cleaned up session ${id}`);
     }
   }
 }, 5 * 60 * 1000);

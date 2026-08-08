@@ -39,6 +39,13 @@ const ChevronRightIcon = () => (
   </svg>
 );
 
+const ArrowRightIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+    <polyline points="12 5 19 12 12 19"></polyline>
+  </svg>
+);
+
 export default function LandingScreen({ onStartInterview, isLoading, error, apiUrl }) {
   const [candidates, setCandidates] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -86,13 +93,7 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
       opacity: [0, 1],
       translateY: [20, 0],
       duration: 600
-    }, '-=400')
-    .add({
-      targets: '.landing-action',
-      opacity: [0, 1],
-      scale: [0.95, 1],
-      duration: 600
-    }, '-=200');
+    }, '-=400');
   }, []);
 
   // Candidate cards staggered animation when loaded or filtered
@@ -262,31 +263,32 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
           </div>
         )}
 
-        {/* Start Button */}
-        <div className="landing-action">
+        {/* Floating Sticky Bottom Action Bar */}
+        <div className={`landing-action-bar ${selectedId && fullCandidateData ? 'visible' : ''}`}>
+          <div className="action-bar-left">
+            <span className="action-bar-pulse" />
+            <span className="action-bar-text">
+              Ready to interview <strong>{fullCandidateData?.member.name}</strong>
+            </span>
+          </div>
           <button
             id="start-interview-btn"
-            className="btn btn-primary btn-lg start-btn"
+            className="btn btn-primary start-btn"
             disabled={!selectedId || isLoading || !fullCandidateData}
             onClick={handleStart}
           >
             {isLoading ? (
               <>
                 <span className="btn-spinner" />
-                Starting Interview...
+                Starting...
               </>
             ) : (
               <>
-                <UserIcon />
-                Start Interview
+                <span>Start Interview</span>
+                <ArrowRightIcon />
               </>
             )}
           </button>
-          {selectedId && fullCandidateData && (
-            <p className="landing-selected-name animate-fade-in">
-              Interviewing <strong>{fullCandidateData.member.name}</strong>
-            </p>
-          )}
         </div>
       </div>
     </div>

@@ -85,3 +85,35 @@ This log records every meaningful AI prompt used to plan and build the AI Interv
 **Result:** Fixed the Flexbox viewport cutoff bug by allowing body-level vertical scrolling, centered the search bar to keep horizontal balance on wide monitors, and converted candidate experience descriptions into clean primary-colored tag badges.
 **Files touched:** frontend/src/components/LandingScreen.css
 
+### 2026-08-08 02:20 PM — Antigravity — Floating Sticky Action Bar Redesign
+**Prompt:** Please understand the ui ux designer skills what you have you use it in that ui if I click any user and if I scroll down to this shall I start entry it scroll down and that inside itself But what if the user have some difficulty in this they think like This is not able to get the start interview properly like that please cheque with the UI design make the ui design attractive professional in a responsive way Every UI not at all this page every page And please don't run git ad
+**Result:** Replaced the static start button area with a floating sticky bottom action bar that rises smoothly from the bottom of the viewport with a glassmorphic look, including a pulsing status dot and arrow slide animations on hover.
+**Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css
+
+### 2026-08-08 02:30 PM — Antigravity — Switch model to Llama 3.1 8B Instant (Free Tier)
+**Prompt:** Please note that this is a new api key I have created cheque with the code the code is somewhere the model you are using somewhere make sure you are using the free model for this api key to connect , check and use the free model
+**Result:** Changed the default Groq model configuration in groq.js from llama-3.3-70b-versatile to llama-3.1-8b-instant, which is the standard free tier model with higher rate limits (14,400 daily requests) to ensure seamless API connections.
+**Files touched:** backend/groq.js, backend/server.js
+
+### 2026-08-08 02:40 PM — Antigravity — Resolve ESM dotenv race condition
+**Prompt:** still the same error, if you cant solve this means tell i will go with another one - or check with the free models can be used with groq apikey - which is not deprecated and use that models also use fall back models
+**Result:** Fixed the ES modules initialization race condition by importing and executing dotenv.config() directly at the top of groq.js. This guarantees that environment variables are loaded from .env before the OpenAI client instance is created.
+**Files touched:** backend/groq.js
+
+### 2026-08-08 02:50 PM — Antigravity — Persistence Across Page Refreshes
+**Prompt:** when I refresh the page basically it again goes to the main page Whether it will be like in the app flow for this product idea means ok fine other rules please change that whenever I refresh the page it should be there itself why it should go away from that page
+**Result:** Implemented frontend state persistence using localStorage in App.jsx. Active session details (screen view, sessionId, candidate data, messages list, feedback reports, and question indices) are synchronized automatically, allowing seamless page restores and hard refreshes.
+**Files touched:** frontend/src/App.jsx
+
+### 2026-08-08 03:10 PM — Antigravity — Add Production Env Variables Documentation
+**Prompt:** You didnt create any variable for frontend and backend - only env i have is groq?
+**Result:** Updated backend/.env.example to include FRONTEND_URL and created frontend/.env.example containing VITE_API_URL, ensuring that all production environment variables required for connection and CORS verification are fully documented for deployment.
+**Files touched:** backend/.env.example, frontend/.env.example
+
+### 2026-08-08 03:20 PM — Antigravity — Create Frontend Env File
+**Prompt:** you just create .env in frotnend and add the value and also tell the value for the backend env
+**Result:** Created frontend/.env containing VITE_API_URL and provided detailed placeholders and guidance on how the user should link their Vercel frontend URL to their Railway backend URL.
+**Files touched:** frontend/.env
+
+
+
