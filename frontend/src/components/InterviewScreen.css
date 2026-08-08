@@ -1,0 +1,365 @@
+/* Interview Chat Screen Styles */
+
+.interview {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+/* ========== Header ========== */
+.interview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.interview-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.interview-header-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.interview-header-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.interview-header-name {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.interview-header-role {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.interview-header-right {
+  flex-shrink: 0;
+}
+
+/* Progress indicator */
+.interview-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.interview-progress-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.interview-progress-bar {
+  width: 100px;
+  height: 4px;
+  background: var(--color-border-light);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.interview-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease-out;
+  animation: progressFill 0.5s ease-out;
+}
+
+/* ========== Chat Area ========== */
+.interview-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  scroll-behavior: smooth;
+}
+
+.interview-chat-inner {
+  max-width: var(--chat-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Messages */
+.message {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 85%;
+}
+
+.message-interviewer {
+  align-self: flex-start;
+}
+
+.message-candidate {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  margin-top: 20px;
+}
+
+.interviewer-avatar {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+}
+
+.candidate-avatar {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-border);
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.message-label {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding: 0 4px;
+}
+
+.message-bubble {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.interviewer-bubble {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-top-left-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.candidate-bubble {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+  border-top-right-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md), 0 2px 8px rgba(194, 84, 10, 0.2);
+}
+
+/* Typing indicator */
+.typing-bubble {
+  padding: var(--space-md) var(--space-lg);
+  min-width: 70px;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  animation: typingDot 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Error toast in chat */
+.chat-error {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-attention-bg);
+  border: 1px solid var(--color-attention);
+  border-radius: var(--radius-md);
+  color: var(--color-attention);
+  font-size: var(--font-size-sm);
+}
+
+/* ========== Input Area ========== */
+.interview-input-area {
+  flex-shrink: 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 8px rgba(43, 38, 34, 0.04);
+}
+
+.interview-input-container {
+  max-width: var(--chat-max-width);
+  margin: 0 auto;
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-end;
+}
+
+.interview-input {
+  flex: 1;
+  resize: none;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+  max-height: 160px;
+  transition: all var(--transition-base);
+  min-height: 44px;
+}
+
+.interview-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+  background: var(--color-surface);
+}
+
+.interview-input::placeholder {
+  color: var(--color-text-light);
+}
+
+.interview-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.send-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius-md);
+}
+
+.interview-input-hint {
+  max-width: var(--chat-max-width);
+  margin: 6px auto 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+/* ========== Responsive ========== */
+
+/* Desktop */
+@media (min-width: 1280px) {
+  .interview-chat {
+    padding: var(--space-xl) var(--space-2xl);
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .interview-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .interview-header-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .interview-progress-bar {
+    width: 72px;
+  }
+
+  .interview-chat {
+    padding: var(--space-md);
+  }
+
+  .message {
+    max-width: 90%;
+  }
+
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+    margin-top: 18px;
+  }
+
+  .message-bubble {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .interview-input-area {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .interview-input-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .interview-header-role {
+    display: none;
+  }
+
+  .interview-progress-text {
+    font-size: 0.65rem;
+  }
+
+  .interview-progress-bar {
+    width: 56px;
+  }
+}

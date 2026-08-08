@@ -1,0 +1,222 @@
+/* Feedback Screen Styles */
+
+.feedback {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--space-2xl) var(--space-lg);
+  overflow-y: auto;
+}
+
+.feedback-container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Completion Header */
+.feedback-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.feedback-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 0 0 8px rgba(46, 125, 79, 0.08);
+}
+
+.feedback-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.feedback-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* Summary */
+.feedback-summary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.feedback-summary-text {
+  font-size: var(--font-size-md);
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+/* Sections */
+.feedback-section {
+  margin-bottom: var(--space-xl);
+}
+
+.feedback-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.feedback-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+}
+
+.strengths-icon {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.gaps-icon {
+  background: var(--color-attention-bg);
+  color: var(--color-attention);
+}
+
+.next-icon {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.feedback-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Feedback Lists */
+.feedback-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.feedback-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.feedback-item:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Strengths styling */
+.strengths-item {
+  border-left: 3px solid var(--color-success);
+}
+
+.strengths-marker {
+  color: var(--color-success);
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Gaps styling */
+.gaps-item {
+  border-left: 3px solid var(--color-attention);
+}
+
+.gaps-marker {
+  color: var(--color-attention);
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Next steps styling */
+.next-item {
+  border-left: 3px solid var(--color-primary);
+}
+
+.feedback-item-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Action */
+.feedback-action {
+  text-align: center;
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-xl);
+}
+
+/* ========== Responsive ========== */
+
+@media (max-width: 767px) {
+  .feedback {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .feedback-check {
+    width: 64px;
+    height: 64px;
+  }
+
+  .feedback-summary {
+    padding: var(--space-md);
+  }
+
+  .feedback-item {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+  }
+}
+
+@media (max-width: 479px) {
+  .feedback-section-header {
+    gap: var(--space-xs);
+  }
+
+  .feedback-section-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Animation helper */
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out both;
+}

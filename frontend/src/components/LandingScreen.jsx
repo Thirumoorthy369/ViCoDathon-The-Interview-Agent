@@ -1,0 +1,228 @@
+/**
+ * Landing / Candidate Select Screen (UI-Design.md §2.1)
+ * 
+ * - App title + tagline
+ * - Searchable candidate list (20 from candidates.json)
+ * - "Start Interview" button, disabled until selected
+ */
+
+import { useState, useEffect } from 'react';
+import './LandingScreen.css';
+
+// Microphone SVG icon for the brand
+const MicIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8"/>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
+const BriefcaseIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+  </svg>
+);
+
+const ChevronRightIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6"/>
+  </svg>
+);
+
+export default function LandingScreen({ onStartInterview, isLoading, error, apiUrl }) {
+  const [candidates, setCandidates] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loadingCandidates, setLoadingCandidates] = useState(true);
+  const [fullCandidateData, setFullCandidateData] = useState(null);
+
+  // Fetch candidates list
+  useEffect(() => {
+    async function fetchCandidates() {
+      try {
+        const response = await fetch(`${apiUrl}/api/candidates`);
+        const data = await response.json();
+        setCandidates(data.candidates || []);
+      } catch (err) {
+        console.error('Failed to load candidates:', err);
+      } finally {
+        setLoadingCandidates(false);
+      }
+    }
+    fetchCandidates();
+  }, [apiUrl]);
+
+  // Filter candidates by search
+  const filtered = candidates.filter(c => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      c.name.toLowerCase().includes(q) ||
+      c.jobRole.toLowerCase().includes(q) ||
+      c.education.toLowerCase().includes(q)
+    );
+  });
+
+  // Handle candidate selection
+  const handleSelect = async (candidateId) => {
+    setSelectedId(candidateId);
+    // Fetch full candidate data for the Start request
+    try {
+      const response = await fetch(`${apiUrl}/api/candidates/${candidateId}`);
+      const data = await response.json();
+      setFullCandidateData(data);
+    } catch (err) {
+      console.error('Failed to load candidate details:', err);
+    }
+  };
+
+  // Handle start
+  const handleStart = () => {
+    if (fullCandidateData) {
+      onStartInterview(fullCandidateData);
+    }
+  };
+
+  return (
+    <div className="landing">
+      {/* Decorative background elements */}
+      <div className="landing-bg-pattern" />
+      
+      <div className="landing-container">
+        {/* Hero Section */}
+        <header className="landing-hero">
+          <div className="landing-logo">
+            <div className="landing-logo-icon">
+              <MicIcon />
+            </div>
+            <div className="landing-logo-text">
+              <h1 className="landing-title">AI Interview Agent</h1>
+              <p className="landing-tagline">Build the interviewer, not the interview.</p>
+            </div>
+          </div>
+          <p className="landing-description">
+            Experience a realistic, AI-powered technical interview personalized to your 
+            learning journey. Select a candidate below to begin.
+          </p>
+        </header>
+
+        {/* Search */}
+        <div className="landing-search-container">
+          <div className="landing-search">
+            <SearchIcon />
+            <input
+              id="candidate-search"
+              type="text"
+              placeholder="Search candidates by name, role, or education..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="landing-search-input"
+            />
+          </div>
+          <span className="landing-count">
+            {filtered.length} candidate{filtered.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {/* Candidate List */}
+        <div className="landing-candidates">
+          {loadingCandidates ? (
+            <div className="landing-loading">
+              <div className="loading-shimmer" />
+              <div className="loading-shimmer" />
+              <div className="loading-shimmer" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="landing-empty">
+              <p>No candidates match your search.</p>
+            </div>
+          ) : (
+            filtered.map((c, index) => (
+              <button
+                key={c.id}
+                id={`candidate-${c.id}`}
+                className={`candidate-card card card-interactive ${selectedId === c.id ? 'selected' : ''}`}
+                onClick={() => handleSelect(c.id)}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="candidate-avatar">
+                  <span className="candidate-initials">
+                    {c.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+                <div className="candidate-info">
+                  <div className="candidate-name">{c.name}</div>
+                  <div className="candidate-role">
+                    <BriefcaseIcon />
+                    <span>{c.jobRole}</span>
+                    <span className="candidate-exp">· {c.yearsExperience}yr exp</span>
+                  </div>
+                  <div className="candidate-meta">
+                    <span className="candidate-education">{c.education}</span>
+                    <span className="candidate-stats">
+                      {c.missionsCompleted}/31 missions · {c.commitDays} commit days
+                    </span>
+                  </div>
+                </div>
+                <div className="candidate-chevron">
+                  <ChevronRightIcon />
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="landing-error animate-fade-in">
+            <p>⚠ {error}</p>
+          </div>
+        )}
+
+        {/* Start Button */}
+        <div className="landing-action">
+          <button
+            id="start-interview-btn"
+            className="btn btn-primary btn-lg start-btn"
+            disabled={!selectedId || isLoading || !fullCandidateData}
+            onClick={handleStart}
+          >
+            {isLoading ? (
+              <>
+                <span className="btn-spinner" />
+                Starting Interview...
+              </>
+            ) : (
+              <>
+                <UserIcon />
+                Start Interview
+              </>
+            )}
+          </button>
+          {selectedId && fullCandidateData && (
+            <p className="landing-selected-name animate-fade-in">
+              Interviewing <strong>{fullCandidateData.member.name}</strong>
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
