@@ -219,6 +219,7 @@ function App() {
           error={error}
           onSendMessage={sendMessage}
           onDismissError={() => setError(null)}
+          onReset={startNewInterview}
         />
       )}
 

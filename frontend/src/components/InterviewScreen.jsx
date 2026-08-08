@@ -49,7 +49,7 @@ function TypingIndicator() {
 }
 
 export default function InterviewScreen({ 
-  candidate, messages, questionCount, isLoading, error, onSendMessage, onDismissError 
+  candidate, messages, questionCount, isLoading, error, onSendMessage, onDismissError, onReset 
 }) {
   const [input, setInput] = useState('');
   const chatEndRef = useRef(null);
@@ -142,7 +142,7 @@ export default function InterviewScreen({
             </span>
           </div>
         </div>
-        <div className="interview-header-right">
+        <div className="interview-header-right" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
           <div className="interview-progress">
             <span className="interview-progress-text">
               Question {questionCount} of ~10
@@ -154,6 +154,14 @@ export default function InterviewScreen({
               />
             </div>
           </div>
+          <button 
+            className="btn btn-ghost"
+            onClick={onReset}
+            title="Exit interview and return to landing page"
+            style={{ padding: '6px 12px', fontSize: '0.8rem', minHeight: 'auto', border: '1px solid var(--color-border)' }}
+          >
+            Exit
+          </button>
         </div>
       </header>
 
@@ -193,7 +201,15 @@ export default function InterviewScreen({
           {error && (
             <div className="chat-error animate-fade-in">
               <p>⚠ {error}</p>
-              <button className="btn btn-ghost" onClick={onDismissError}>Dismiss</button>
+              <div className="chat-error-actions" style={{ marginTop: 'var(--space-sm)', display: 'flex', gap: 'var(--space-sm)' }}>
+                {error.toLowerCase().includes('session') ? (
+                  <button className="btn btn-primary" onClick={onReset} style={{ padding: '4px 12px', fontSize: '0.8rem', minHeight: 'auto' }}>
+                    Restart Interview
+                  </button>
+                ) : (
+                  <button className="btn btn-ghost" onClick={onDismissError}>Dismiss</button>
+                )}
+              </div>
             </div>
           )}
 

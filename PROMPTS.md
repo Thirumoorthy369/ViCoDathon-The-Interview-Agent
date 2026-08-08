@@ -150,3 +150,18 @@ Navigate directly to the core design documents created during the planning phase
 **Prompt:** you told about deploy bu ti need readme to talk about the product right?
 **Result:** Expanded README.md to describe the product's core value proposition, outlining the user problem (articulation gaps, feedback mismatches), the agent's simulator role (Senior Engineering Manager), and the core candidate user journey (Plan, Chat, Report).
 **Files touched:** README.md
+
+### 2026-08-09 12:05 AM — Antigravity — Landing Screen Footer & Privacy Guard
+**Prompt:** whether we need to add any privacy policy or anything like that for this product and also in footer build with is anything we can add?
+**Result:** Added a responsive product footer to LandingScreen.jsx containing development credits (React, Express, Groq Llama 3.1) and a clear data privacy statement confirming that chat transcripts are processed strictly in-memory and discarded upon session completion.
+**Files touched:** frontend/src/components/LandingScreen.jsx, frontend/src/components/LandingScreen.css
+
+### 2026-08-09 12:15 AM — Antigravity — Session Expiry Recovery & Exit Trigger
+**Prompt:** session not found i need to start new session but i cant why - provide a solution
+**Result:** Implemented a session recovery flow: passed App.jsx's startNewInterview hook as an onReset callback into InterviewScreen.jsx. Added a "Restart Interview" prompt button inside the chat error banner when session not found is raised, and added an "Exit" navigation link in the header to permit manual session resets.
+**Files touched:** frontend/src/App.jsx, frontend/src/components/InterviewScreen.jsx
+
+### 2026-08-09 12:35 AM — Antigravity — Candidate Name Schema Crash Fix
+**Prompt:** Frontend crashed LandingScreen.jsx:289 Uncaught TypeError: Cannot read properties of undefined (reading 'name') use the backend url added in env of frontend
+**Result:** Fixed a schema mismatch crash where candidates from the overview list lacked the nested .member object structure. Resolved by computing selectedLocalCandidate directly from client-state data for zero-latency label rendering while loading full profile detail missions in the background.
+**Files touched:** frontend/src/components/LandingScreen.jsx

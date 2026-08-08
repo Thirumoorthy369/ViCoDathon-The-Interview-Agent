@@ -120,25 +120,29 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
       c.education.toLowerCase().includes(q)
     );
   });
+  // Lookup selected candidate's local data instantly for zero-latency UI labels
+  const selectedLocalCandidate = candidates.find(c => c.id === selectedId);
 
   // Handle candidate selection
   const handleSelect = async (candidateId) => {
     setSelectedId(candidateId);
-    // Fetch full candidate data for the Start request
+    setFullCandidateData(null); // Clear previous details so Start button disables while loading
+    
+    // Fun selection micro-animation
+    anime({
+      targets: `#candidate-${candidateId}`,
+      scale: [0.98, 1.01, 1],
+      duration: 400,
+      easing: 'easeOutQuad'
+    });
+
+    // Fetch the full candidate profile with missions (required for the personalization engine)
     try {
       const response = await fetch(`${apiUrl}/api/candidates/${candidateId}`);
       const data = await response.json();
       setFullCandidateData(data);
-      
-      // Fun selection micro-animation
-      anime({
-        targets: `#candidate-${candidateId}`,
-        scale: [0.98, 1.01, 1],
-        duration: 400,
-        easing: 'easeOutQuad'
-      });
     } catch (err) {
-      console.error('Failed to load candidate details:', err);
+      console.error('Failed to sync candidate details in background:', err);
     }
   };
 
@@ -263,33 +267,43 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
           </div>
         )}
 
-        {/* Floating Sticky Bottom Action Bar */}
-        <div className={`landing-action-bar ${selectedId && fullCandidateData ? 'visible' : ''}`}>
-          <div className="action-bar-left">
-            <span className="action-bar-pulse" />
-            <span className="action-bar-text">
-              Ready to interview <strong>{fullCandidateData?.member.name}</strong>
-            </span>
+        {/* Footer */}
+        <footer className="landing-footer">
+          <p className="footer-built-with">
+            Built with 🧡 for <strong>ViCoDathon</strong> · Powered by <strong>an AI Engineer</strong> and <strong>Vibe Coder</strong>
+          </p>
+          <div className="footer-privacy-links">
+            <span>🛡️ Privacy Guard: Conversations are held in-memory and destroyed immediately upon session completion.</span>
           </div>
-          <button
-            id="start-interview-btn"
-            className="btn btn-primary start-btn"
-            disabled={!selectedId || isLoading || !fullCandidateData}
-            onClick={handleStart}
-          >
-            {isLoading ? (
-              <>
-                <span className="btn-spinner" />
-                Starting...
-              </>
-            ) : (
-              <>
-                <span>Start Interview</span>
-                <ArrowRightIcon />
-              </>
-            )}
-          </button>
+        </footer>
+      </div>
+
+      {/* Floating Sticky Bottom Action Bar (Moved outside container to avoid backdrop-filter fixed clipping) */}
+      <div className={`landing-action-bar ${selectedId ? 'visible' : ''}`}>
+        <div className="action-bar-left">
+          <span className="action-bar-pulse" />
+          <span className="action-bar-text">
+            Ready to interview <strong>{selectedLocalCandidate?.name || 'Candidate'}</strong>
+          </span>
         </div>
+        <button
+          id="start-interview-btn"
+          className="btn btn-primary start-btn"
+          disabled={!selectedId || isLoading || !fullCandidateData}
+          onClick={handleStart}
+        >
+          {isLoading || (!fullCandidateData && selectedId) ? (
+            <>
+              <span className="btn-spinner" />
+              Starting...
+            </>
+          ) : (
+            <>
+              <span>Start Interview</span>
+              <ArrowRightIcon />
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
