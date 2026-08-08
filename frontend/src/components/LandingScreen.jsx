@@ -217,29 +217,38 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
                 id={`candidate-${c.id}`}
                 className={`candidate-card card card-interactive ${selectedId === c.id ? 'selected' : ''}`}
                 onClick={() => handleSelect(c.id)}
-                style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="candidate-avatar">
-                  <span className="candidate-initials">
-                    {c.name.split(' ').map(n => n[0]).join('')}
-                  </span>
+                {selectedId === c.id && (
+                  <div className="candidate-selected-tag">Selected</div>
+                )}
+                
+                <div className="candidate-card-header">
+                  <div className="candidate-avatar">
+                    <span className="candidate-initials">
+                      {c.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <div className="candidate-header-details">
+                    <div className="candidate-name">{c.name}</div>
+                    <div className="candidate-exp-badge">{c.yearsExperience} yrs experience</div>
+                  </div>
                 </div>
-                <div className="candidate-info">
-                  <div className="candidate-name">{c.name}</div>
+
+                <div className="candidate-card-body">
                   <div className="candidate-role">
                     <BriefcaseIcon />
                     <span>{c.jobRole}</span>
-                    <span className="candidate-exp">· {c.yearsExperience}yr exp</span>
                   </div>
-                  <div className="candidate-meta">
-                    <span className="candidate-education">{c.education}</span>
-                    <span className="candidate-stats">
-                      {c.missionsCompleted}/31 missions · {c.commitDays} commit days
-                    </span>
-                  </div>
+                  <div className="candidate-education">{c.education}</div>
                 </div>
-                <div className="candidate-chevron">
-                  <ChevronRightIcon />
+
+                <div className="candidate-card-footer">
+                  <div className="candidate-stat-pill">
+                    <strong>{c.missionsCompleted}</strong> <span>/ 31 missions</span>
+                  </div>
+                  <div className="candidate-stat-pill">
+                    <strong>{c.commitDays}</strong> <span>commit days</span>
+                  </div>
                 </div>
               </button>
             ))
