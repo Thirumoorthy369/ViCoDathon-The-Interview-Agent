@@ -16,6 +16,7 @@ import dotenv from 'dotenv';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { buildInterviewPlan, summarizePlan } from './planner.js';
 
 dotenv.config();
 
@@ -157,8 +158,9 @@ app.post('/api/interview', async (req, res) => {
         return res.status(400).json({ error: 'Invalid candidate object shape' });
       }
 
-      // Build the question plan (Step 4 will implement the real planner)
-      const questionPlan = buildQuestionPlan(candidate);
+      // Build the question plan using the Personalization Engine (TRD.md §4)
+      const questionPlan = buildInterviewPlan(candidate, curriculum);
+      console.log(`✓ Plan for ${candidate.member.name}:`, summarizePlan(questionPlan));
 
       // Initialize session (TRD.md §3.2)
       const session = {
@@ -261,49 +263,7 @@ app.post('/api/interview', async (req, res) => {
   }
 });
 
-/**
- * Build a question plan from candidate data (TRD.md §4)
- * Stub implementation — Step 4 will implement the full personalization engine.
- */
-function buildQuestionPlan(candidate) {
-  const plan = [];
-
-  for (const mission of candidate.missions) {
-    const mod = getModuleForDay(mission.day);
-    let rationale = 'capstone_anchor';
-    let priority = 1;
-
-    if (mission.skipped) {
-      rationale = 'skipped';
-      priority = 10;
-    } else if (mission.passed === false) {
-      rationale = 'failed';
-      priority = 9;
-    } else if (mission.attempts >= 3) {
-      rationale = 'high_attempts_weak';
-      priority = 7;
-    } else if (mission.attempts === 1) {
-      rationale = 'low_attempts_high_confidence';
-      priority = 5;
-    }
-
-    if (mission.day === 31) {
-      rationale = 'capstone_anchor';
-      priority = 8;
-    }
-
-    plan.push({
-      day: mission.day,
-      moduleTitle: mod ? mod.title : 'Unknown',
-      rationale,
-      priority
-    });
-  }
-
-  // Sort by priority descending
-  plan.sort((a, b) => b.priority - a.priority);
-  return plan;
-}
+// Question plan is now built by planner.js (Step 4 — Personalization Engine)
 
 /**
  * Generate a stub opening question based on the plan rationale.
