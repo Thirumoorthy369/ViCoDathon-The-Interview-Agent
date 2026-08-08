@@ -17,8 +17,8 @@ In modern AI engineering cohorts, developers learn to build complex systems (RAG
 1. **Articulating architectural decisions:** Explaining *why* they chose specific tools, similarity metrics, or prompts under pressure.
 2. **The Feedback Gap:** Generic mock interviews fail because they don't align with the candidate's individual progress, skipped lessons, or past struggles.
 
-### 💡 The Solution: ViCoDathon
-ViCoDathon acts as an adaptive **Senior Engineering Manager** simulator. It ingests the cohort's 31-day curriculum alongside the candidate's metadata and designs a custom-tailored technical review. 
+### 💡 The Solution: ViCoDathon - The Interview Agent
+ViCoDathon - The Interview Agent acts as an adaptive **Senior Engineering Manager** simulator. It ingests the cohort's 31-day curriculum alongside the candidate's metadata and designs a custom-tailored technical review. 
 
 Instead of generic questions, it drills the candidate on the exact days they skipped or failed, and challenges their first-try passes with advanced system design trade-offs.
 
@@ -79,7 +79,7 @@ Create a `.env` file in the `backend/` directory:
 ```env
 GROQ_API_KEY=gsk_your_real_groq_key
 FRONTEND_URL=https://vicodathon-the-interview-agent.vercel.app
-PORT=8080
+PORT=3001
 ```
 
 ### Frontend variables (`frontend/.env`)
