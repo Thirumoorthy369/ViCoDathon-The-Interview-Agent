@@ -14,14 +14,50 @@
 import OpenAI from 'openai';
 
 // Initialize Groq client via OpenAI SDK (TRD.md §5.2)
-const client = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
-  baseURL: 'https://api.groq.com/openai/v1',
-});
+// Graceful handling: if key is missing, server starts but LLM calls use fallbacks
+let client = null;
+try {
+  if (process.env.GROQ_API_KEY) {
+    client = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY,
+      baseURL: 'https://api.groq.com/openai/v1',
+    });
+    console.log('✓ Groq client initialized');
+  } else {
+    console.warn('⚠ GROQ_API_KEY not set — LLM calls will use fallback responses');
+  }
+} catch (err) {
+  console.warn('⚠ Failed to initialize Groq client:', err.message);
+}
 
 // Model choice: llama-3.3-70b-versatile for strongest reasoning (TRD.md §5.3)
 // Fallback: llama-3.1-8b-instant if latency is a concern during live judging
 const MODEL = 'llama-3.3-70b-versatile';
+
+/**
+ * Generate a robust fallback question when offline or missing API key (TRD.md §5.4)
+ */
+function getFallbackQuestion(planEntry) {
+  const objectives = planEntry.objectives;
+  const tools = planEntry.tools;
+  const defaultObj = objectives && objectives.length > 0 ? objectives[0] : 'the core requirements';
+  const defaultTools = tools && tools.length > 0 ? ` (using tools like ${tools.slice(0, 2).join(', ')})` : '';
+
+  switch (planEntry.rationale) {
+    case 'skipped':
+      return `Since this topic was skipped in your progress, could you explain the theoretical concept of ${defaultObj}${defaultTools} from first principles?`;
+    case 'failed':
+      return `This was a challenging area during the cohort. Can you explain your understanding of ${defaultObj}${defaultTools}? What do you think is the most complex part of setting this up?`;
+    case 'high_attempts_weak':
+      return `You completed this day after several attempts. Can you walk me through the main challenges you faced with ${defaultObj}, and how you resolved them?`;
+    case 'low_attempts_high_confidence':
+      return `You completed this on your first try! Can you explain the architectural choices you made for ${defaultObj}${defaultTools}, and how you evaluated any alternatives?`;
+    case 'capstone_anchor':
+      return `Let's discuss your Capstone Project (Day 31). Could you walk me through the high-level architecture, the main tools you integrated, and why you structured it this way?`;
+    default:
+      return `Can you explain how you approached the objectives for this day: "${defaultObj}"?`;
+  }
+}
 
 /**
  * Build the interviewer system prompt (TRD.md §5.4, App-Flow.md §3)
@@ -143,7 +179,7 @@ export async function generateInterviewReply(session, candidateMessage, currentP
 
   // Determine if we should instruct advancement or follow-up
   // Count how many follow-ups we've done on the current topic
-  const currentTopicFollowups = countFollowupsOnCurrentTopic(session, currentPlanEntry);
+  const currentTopicFollowups = session.followupCount || 0;
   
   let advanceInstruction = '';
   if (currentTopicFollowups >= 2) {
@@ -159,6 +195,39 @@ export async function generateInterviewReply(session, candidateMessage, currentP
 (b) Move to the next topic (Day ${nextPlanEntry.day}: ${nextPlanEntry.dayTitle}, ${nextPlanEntry.moduleTitle}) if the current topic feels sufficiently explored — use a natural transition.
 
 Choose (a) or (b) based on the quality and depth of the candidate's response.`;
+  }
+
+  if (!client) {
+    console.log('Using simulated offline response for interview reply');
+    // If the answer is extremely short or empty, ask for clarification/elaboration
+    if (!candidateMessage.trim() || candidateMessage.trim().split(/\s+/).length < 3) {
+      return {
+        reply: `I see. Could you elaborate on that a bit more? Specifically, how did that fit into your learning/project goals for Day ${currentPlanEntry.day}?`,
+        shouldAdvance: false
+      };
+    }
+
+    if (currentTopicFollowups < 1) {
+      // Ask a follow-up
+      const obj = currentPlanEntry.objectives[0] || 'the core objectives';
+      return {
+        reply: `That makes sense. In the context of Day ${currentPlanEntry.day}: ${currentPlanEntry.dayTitle}, how did you verify the success of ${obj}? What edge cases did you encounter?`,
+        shouldAdvance: false
+      };
+    } else {
+      // Advance
+      if (nextPlanEntry) {
+        return {
+          reply: `Thanks for sharing those details. Let's transition to a different area: Day ${nextPlanEntry.day} — ${nextPlanEntry.dayTitle} (${nextPlanEntry.moduleTitle}). ${getFallbackQuestion(nextPlanEntry)}`,
+          shouldAdvance: true
+        };
+      } else {
+        return {
+          reply: `Thank you. I have covered all the major topics I wanted to discuss today. We're ready to wrap up the interview.`,
+          shouldAdvance: false
+        };
+      }
+    }
   }
 
   try {
@@ -194,6 +263,11 @@ Choose (a) or (b) based on the quality and depth of the candidate's response.`;
 export async function generateOpeningMessage(session, firstPlanEntry) {
   const { candidate } = session;
   const { member } = candidate;
+
+  if (!client) {
+    console.log('Using simulated offline response for opening message');
+    return `Hello ${member.name}, thanks for joining. I'm your technical interviewer today. I see you completed the AI Cohort program. Let's begin by discussing Day ${firstPlanEntry.day}: ${firstPlanEntry.dayTitle}. ${getFallbackQuestion(firstPlanEntry)}`;
+  }
 
   const systemPrompt = `You are a professional, warm, and direct technical interviewer. You are about to begin an interview with ${member.name}, a ${member.jobRole} with ${member.yearsExperience} years of experience.
 
@@ -320,6 +394,11 @@ IMPORTANT RULES:
 - Base ALL feedback on what was ACTUALLY discussed in the transcript, not on generic advice
 - Each array item should be a concise sentence (1-2 lines max)
 - Do NOT include any text outside the JSON object`;
+
+  if (!client) {
+    console.log('Using simulated offline response for feedback');
+    return getFallbackFeedback(session);
+  }
 
   try {
     const response = await client.chat.completions.create({

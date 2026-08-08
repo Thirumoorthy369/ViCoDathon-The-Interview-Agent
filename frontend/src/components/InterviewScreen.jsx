@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+import anime from 'animejs';
 import './InterviewScreen.css';
 
 const SendIcon = () => (
@@ -29,7 +30,7 @@ const MicIcon = () => (
 // Typing indicator (three-dot pulse)
 function TypingIndicator() {
   return (
-    <div className="message message-interviewer animate-slide-in-left">
+    <div className="message message-interviewer typing-indicator-container">
       <div className="message-avatar interviewer-avatar">
         <MicIcon />
       </div>
@@ -59,6 +60,37 @@ export default function InterviewScreen({
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Animate the last message bubble on mount
+  useEffect(() => {
+    const messagesElements = document.querySelectorAll('.message');
+    if (messagesElements.length > 0) {
+      const lastMessage = messagesElements[messagesElements.length - 1];
+      // Skip animating typing indicator here, let CSS handle it
+      if (lastMessage.classList.contains('typing-indicator-container')) return;
+
+      const isInterviewer = lastMessage.classList.contains('message-interviewer');
+      anime({
+        targets: lastMessage,
+        translateX: isInterviewer ? [-30, 0] : [30, 0],
+        opacity: [0, 1],
+        scale: [0.95, 1],
+        duration: 400,
+        easing: 'easeOutCubic'
+      });
+    }
+  }, [messages.length]);
+
+  // Animate progress bar fill changes smoothly
+  const progressPercent = Math.min((questionCount / 10) * 100, 100);
+  useEffect(() => {
+    anime({
+      targets: '.interview-progress-fill',
+      width: `${progressPercent}%`,
+      duration: 600,
+      easing: 'easeOutCubic'
+    });
+  }, [progressPercent]);
+
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -85,7 +117,6 @@ export default function InterviewScreen({
   };
 
   const firstName = candidate?.member?.name?.split(' ')[0] || 'Candidate';
-  const progressPercent = Math.min((questionCount / 10) * 100, 100);
 
   return (
     <div className="interview">
@@ -125,7 +156,7 @@ export default function InterviewScreen({
           {messages.map((msg, i) => (
             <div 
               key={i}
-              className={`message ${msg.role === 'interviewer' ? 'message-interviewer' : 'message-candidate'} ${msg.role === 'interviewer' ? 'animate-slide-in-left' : 'animate-slide-in-right'}`}
+              className={`message ${msg.role === 'interviewer' ? 'message-interviewer' : 'message-candidate'}`}
             >
               {msg.role === 'interviewer' && (
                 <div className="message-avatar interviewer-avatar">

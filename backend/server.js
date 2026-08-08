@@ -143,7 +143,7 @@ app.post('/api/interview', async (req, res) => {
       const questionPlan = buildInterviewPlan(candidate, curriculum);
       console.log(`✓ Plan for ${candidate.member.name}:`, summarizePlan(questionPlan));
 
-      // Initialize session (TRD.md §3.2)
+          // Initialize session (TRD.md §3.2)
       const session = {
         sessionId,
         candidate,
@@ -152,7 +152,8 @@ app.post('/api/interview', async (req, res) => {
         questionCount: 0,
         currentPlanIndex: 0,
         transcript: [],
-        status: 'in_progress'
+        status: 'in_progress',
+        followupCount: 0
       };
 
       sessions.set(sessionId, session);
@@ -198,22 +199,34 @@ app.post('/api/interview', async (req, res) => {
       if (shouldAdvance && nextPlan) {
         session.currentPlanIndex++;
         session.askedDays.add(nextPlan.day);
+        session.followupCount = 0;
+      } else {
+        session.followupCount = (session.followupCount || 0) + 1;
       }
       session.questionCount++;
 
       // Record in transcript
       session.transcript.push({ role: 'interviewer', text: reply });
 
-      // Check completion condition (TRD.md §3.2)
+      // Check completion condition (TRD.md §3.2, App-Flow.md §5 edge cases)
       const MIN_QUESTIONS = 8;
       const MIN_DAYS = 4;
       const MAX_QUESTIONS = 14;
       
       const meetsMinimums = session.questionCount >= MIN_QUESTIONS && session.askedDays.size >= MIN_DAYS;
       const hitCeiling = session.questionCount >= MAX_QUESTIONS;
-      const exhaustedPlan = session.currentPlanIndex >= session.questionPlan.length - 1 && meetsMinimums;
+      const exhaustedPlan = session.currentPlanIndex >= session.questionPlan.length - 1;
+      const canMeetMinimums = session.questionPlan.length >= MIN_DAYS;
 
-      if (meetsMinimums && (hitCeiling || exhaustedPlan || !nextPlan)) {
+      // Complete if:
+      // 1. We hit the hard ceiling of 14 questions (cost containment)
+      // 2. We met minimums (8 questions, 4 days) and the plan is exhausted
+      // 3. We cannot possibly meet MIN_DAYS (sparse candidate profile) but reached MIN_QUESTIONS (8)
+      const isComplete = hitCeiling || 
+        (meetsMinimums && (exhaustedPlan || !nextPlan)) ||
+        (!nextPlan && !canMeetMinimums && session.questionCount >= MIN_QUESTIONS);
+
+      if (isComplete) {
         // --- End the interview (App-Flow.md §2, STATE: ENDING → DONE) ---
         console.log(`✓ Interview ending for ${session.candidate.member.name}: ${session.questionCount} questions, ${session.askedDays.size} days`);
         

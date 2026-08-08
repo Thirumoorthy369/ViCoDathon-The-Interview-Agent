@@ -46,7 +46,7 @@
 .landing-hero {
   text-align: center;
   margin-bottom: var(--space-2xl);
-  animation: fadeInUp 0.6s ease-out;
+  opacity: 0; /* Animated by anime.js */
 }
 
 .landing-logo {
@@ -67,6 +67,7 @@
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   color: white;
   box-shadow: var(--shadow-lg), 0 4px 16px rgba(194, 84, 10, 0.3);
+  transform: scale(0); /* Animated by anime.js */
 }
 
 .landing-logo-text {
@@ -103,7 +104,7 @@
   justify-content: space-between;
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
-  animation: fadeInUp 0.6s ease-out 0.1s both;
+  opacity: 0; /* Animated by anime.js */
 }
 
 .landing-search {
@@ -164,7 +165,7 @@
   text-align: left;
   width: 100%;
   background: var(--color-surface);
-  animation: fadeInUp 0.4s ease-out both;
+  opacity: 0; /* Animated by anime.js */
 }
 
 .candidate-avatar {
@@ -287,7 +288,7 @@
 .landing-action {
   text-align: center;
   padding-top: var(--space-md);
-  animation: fadeInUp 0.6s ease-out 0.2s both;
+  opacity: 0; /* Animated by anime.js */
 }
 
 .start-btn {

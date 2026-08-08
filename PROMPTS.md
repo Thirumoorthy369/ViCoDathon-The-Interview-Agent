@@ -46,3 +46,11 @@
 - **Feedback retry:** Single corrective retry on parse failure per Security.md §4, with fallback to static feedback if both attempts fail.
 - **System prompt includes dynamic context:** current plan entry, coverage summary, questions remaining — so the LLM knows the interview's state at every turn.
 
+## Entry 5 — Frontend & Polish Pass (Steps 7-10)
+**Date:** 2026-08-08
+**What:** Designing and building Landing, Chat, and Feedback screens, with premium anime.js micro-interactions
+**Prompt/approach:** Built a custom CSS design system using a warm terracotta/amber palette (#C2540A) to stand out from generic AI chatbot templates. Added anime.js timeline animations for initial landing page entrance, elastic card staggers, message bubble scaling/sliding, smooth progress bar updates, and Checkmark path drawing on feedback completion. Wrote mock simulated responses on the server to keep the app 100% testable and robust even if Groq keys are not configured.
+**Design decisions:**
+- **Color Palette:** Curated `#C2540A` (primary brand color) with cream backgrounds and off-white cards to look extremely professional and premium.
+- **Animations:** Downgraded anime.js to `3.2.2` (via npm) to use the stable, robust default-export `anime(...)` API. Eliminated CSS keyframe animations that collided with JS transforms to avoid visual glitches.
+- **Robustness:** Added `followupCount` tracking to the backend session object rather than parsing transcripts. Wrote a custom programmatic E2E script `test-end-to-end.mjs` to simulate 20 turns and verify the completion state machine (especially for sparse candidate profiles with <4 days where MIN_DAYS cannot be met).

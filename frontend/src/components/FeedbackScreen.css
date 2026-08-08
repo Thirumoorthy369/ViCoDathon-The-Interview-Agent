@@ -16,6 +16,7 @@
 .feedback-header {
   text-align: center;
   margin-bottom: var(--space-2xl);
+  opacity: 0; /* Animated by anime.js */
 }
 
 .feedback-check {
@@ -52,6 +53,7 @@
   padding: var(--space-xl);
   margin-bottom: var(--space-xl);
   box-shadow: var(--shadow-sm);
+  opacity: 0; /* Animated by anime.js */
 }
 
 .feedback-summary-text {
@@ -63,6 +65,7 @@
 /* Sections */
 .feedback-section {
   margin-bottom: var(--space-xl);
+  opacity: 0; /* Animated by anime.js */
 }
 
 .feedback-section-header {
@@ -181,6 +184,7 @@
   text-align: center;
   padding-top: var(--space-lg);
   padding-bottom: var(--space-xl);
+  opacity: 0; /* Animated by anime.js */
 }
 
 /* ========== Responsive ========== */

@@ -1,12 +1,5 @@
-/**
- * Landing / Candidate Select Screen (UI-Design.md §2.1)
- * 
- * - App title + tagline
- * - Searchable candidate list (20 from candidates.json)
- * - "Start Interview" button, disabled until selected
- */
-
 import { useState, useEffect } from 'react';
+import anime from 'animejs';
 import './LandingScreen.css';
 
 // Microphone SVG icon for the brand
@@ -69,6 +62,53 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
     fetchCandidates();
   }, [apiUrl]);
 
+  // Page Load entrance animations
+  useEffect(() => {
+    anime.timeline({
+      easing: 'easeOutQuad'
+    })
+    .add({
+      targets: '.landing-logo-icon',
+      scale: [0, 1],
+      rotate: '1turn',
+      duration: 1000,
+      easing: 'easeOutElastic(1, .6)'
+    })
+    .add({
+      targets: ['.landing-title', '.landing-tagline', '.landing-description'],
+      opacity: [0, 1],
+      translateY: [20, 0],
+      delay: anime.stagger(100),
+      duration: 800
+    }, '-=600')
+    .add({
+      targets: '.landing-search-container',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 600
+    }, '-=400')
+    .add({
+      targets: '.landing-action',
+      opacity: [0, 1],
+      scale: [0.95, 1],
+      duration: 600
+    }, '-=200');
+  }, []);
+
+  // Candidate cards staggered animation when loaded or filtered
+  useEffect(() => {
+    if (!loadingCandidates && filtered.length > 0) {
+      anime({
+        targets: '.candidate-card',
+        translateY: [30, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(40),
+        duration: 800,
+        easing: 'easeOutElastic(1, .85)'
+      });
+    }
+  }, [loadingCandidates, searchQuery, candidates]);
+
   // Filter candidates by search
   const filtered = candidates.filter(c => {
     if (!searchQuery) return true;
@@ -88,6 +128,14 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
       const response = await fetch(`${apiUrl}/api/candidates/${candidateId}`);
       const data = await response.json();
       setFullCandidateData(data);
+      
+      // Fun selection micro-animation
+      anime({
+        targets: `#candidate-${candidateId}`,
+        scale: [0.98, 1.01, 1],
+        duration: 400,
+        easing: 'easeOutQuad'
+      });
     } catch (err) {
       console.error('Failed to load candidate details:', err);
     }
@@ -96,7 +144,16 @@ export default function LandingScreen({ onStartInterview, isLoading, error, apiU
   // Handle start
   const handleStart = () => {
     if (fullCandidateData) {
-      onStartInterview(fullCandidateData);
+      // Start button pulse zoom before transitioning
+      anime({
+        targets: '.start-btn',
+        scale: [1, 0.95, 1.1, 1],
+        duration: 500,
+        easing: 'easeInOutQuad',
+        complete: () => {
+          onStartInterview(fullCandidateData);
+        }
+      });
     }
   };
 

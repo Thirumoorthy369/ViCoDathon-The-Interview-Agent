@@ -1,14 +1,5 @@
-/**
- * Feedback / Results Screen (UI-Design.md §2.3)
- * 
- * - "Interview Complete" header
- * - Summary paragraph
- * - Strengths (green accent)
- * - Areas to Improve (amber accent, coaching tone)
- * - Recommended Next Steps
- * - "Start New Interview" button
- */
-
+import { useEffect } from 'react';
+import anime from 'animejs';
 import './FeedbackScreen.css';
 
 const CheckCircleIcon = () => (
@@ -47,6 +38,49 @@ const RefreshIcon = () => (
 );
 
 export default function FeedbackScreen({ candidate, feedback, questionCount, messages, onStartNew }) {
+  // Page entrance timeline with SVG path drawing and staggered cards
+  useEffect(() => {
+    if (!feedback) return;
+
+    // Reset offsets first for clean SVG path drawing
+    anime({
+      targets: '.feedback-check svg path, .feedback-check svg polyline',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      duration: 1200,
+      delay: (el, i) => i * 200,
+      easing: 'easeInOutSine'
+    });
+
+    anime.timeline({
+      easing: 'easeOutQuad'
+    })
+    .add({
+      targets: '.feedback-header',
+      translateY: [30, 0],
+      opacity: [0, 1],
+      duration: 600
+    })
+    .add({
+      targets: '.feedback-summary',
+      translateY: [30, 0],
+      opacity: [0, 1],
+      duration: 600
+    }, '-=300')
+    .add({
+      targets: '.feedback-section',
+      translateY: [30, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(120),
+      duration: 800
+    }, '-=400')
+    .add({
+      targets: '.feedback-action',
+      scale: [0.95, 1],
+      opacity: [0, 1],
+      duration: 500
+    }, '-=300');
+  }, [feedback]);
+
   if (!feedback) return null;
 
   const candidateName = candidate?.member?.name || 'Candidate';
@@ -62,7 +96,7 @@ export default function FeedbackScreen({ candidate, feedback, questionCount, mes
     <div className="feedback">
       <div className="feedback-container">
         {/* Completion Header */}
-        <header className="feedback-header animate-fade-in-up">
+        <header className="feedback-header">
           <div className="feedback-check">
             <CheckCircleIcon />
           </div>
@@ -73,12 +107,12 @@ export default function FeedbackScreen({ candidate, feedback, questionCount, mes
         </header>
 
         {/* Summary */}
-        <section className="feedback-section feedback-summary animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <section className="feedback-section feedback-summary">
           <p className="feedback-summary-text">{feedback.summary}</p>
         </section>
 
         {/* Strengths */}
-        <section className="feedback-section animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <section className="feedback-section">
           <div className="feedback-section-header">
             <div className="feedback-section-icon strengths-icon">
               <StarIcon />
@@ -96,7 +130,7 @@ export default function FeedbackScreen({ candidate, feedback, questionCount, mes
         </section>
 
         {/* Gaps / Areas to Improve */}
-        <section className="feedback-section animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+        <section className="feedback-section">
           <div className="feedback-section-header">
             <div className="feedback-section-icon gaps-icon">
               <TargetIcon />
@@ -114,7 +148,7 @@ export default function FeedbackScreen({ candidate, feedback, questionCount, mes
         </section>
 
         {/* Next Steps */}
-        <section className="feedback-section animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+        <section className="feedback-section">
           <div className="feedback-section-header">
             <div className="feedback-section-icon next-icon">
               <ArrowRightIcon />
@@ -132,7 +166,7 @@ export default function FeedbackScreen({ candidate, feedback, questionCount, mes
         </section>
 
         {/* Action */}
-        <div className="feedback-action animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+        <div className="feedback-action">
           <button
             id="start-new-interview-btn"
             className="btn btn-primary btn-lg"
