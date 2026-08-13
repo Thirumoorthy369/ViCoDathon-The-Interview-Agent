@@ -123,3 +123,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 * Built with passion for the **ViCoDathon** Hackathon.
 * Special thanks to the Google **Antigravity** developer pairing system.
 * Powered by Groq's high-speed **Llama-3.1-8b-instant** and **Llama-3.3-70b-versatile** models.
+
+## Architeture diagram of this AI Interview Agent
+<img width="4554" height="6399" alt="diagram" src="https://github.com/user-attachments/assets/db76d606-a442-4114-8e63-0915845a154b" />
+
